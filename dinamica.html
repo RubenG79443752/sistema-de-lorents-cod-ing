@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="examples.css">
+    <script src="Tanglekit/js/jquery-2.1.1.js"></script>
+    <script src="Tanglekit/js/Tangle.js"></script>
+    <script src="Tanglekit/js/Plot.js"></script>
+    <script src="Tanglekit/js/Chart.min.js"></script>
+    <script src="Tanglekit/js/jquery.flot.js"></script>
+    <!-- TangleKit -->
+    <link rel="stylesheet" href="TangleKit/TangleKit.css" type="text/css">
+    <script type="text/javascript" src="TangleKit/mootools.js"></script>
+    <script type="text/javascript" src="TangleKit/sprintf.js"></script>
+    <script type="text/javascript" src="TangleKit/BVTouchable.js"></script>
+    <script type="text/javascript" src="TangleKit/TangleKit.js"></script>
+    <script type="module">
+        import Graph3D from "./three/Graph3D.js"
+        jQuery(document).ready(function ($) {
+            var model = {
+                initialize: function () {
+                    this.step = 1 / 128;
+                    this.tiempo = 0;
+                    this.graph = new Graph3D("canvas3d");
+                    this.x0 = -8;
+                    this.y0 = 8;
+                    this.z0 = 27;
+                    this.b = 2.66;
+                    this.o = 10;
+                    this.p = 28;
+                },
+                update: function () {
+                    this.points = [];
+                    this.point3d = [];
+                    this.x = this.x0;
+                    this.y = this.y0;
+                    this.z = this.z0;
+                    for (var t = 0; t < this.tiempo; t += this.step) {
+                        this.x += (-this.o * this.x + this.o * this.y) * this.step;
+
+              this.y +=
+                (this.p * this.x - this.y - this.x * this.z) * this.step;
+
+              this.z += (-this.b * this.z + this.x * this.y) * this.step;
+
+              this.points.push([this.z, this.x]);
+              this.point3d.push({ x: this.x, y: this.y, z: this.z });
+                    }
+                    this.graph.plot3d(this.point3d);
+                    $("#r").html(this.xs);
+                    var options = {
+                        color: "#ffffff",
+                        series: {
+                            lines: { show: true },
+                            points: { show: false }
+                        },
+                        legend: {
+                            show: true,
+                            position: "ne"
+                        }
+                    };
+                    $.plot("#canvas1", [{ data: this.points, label: "test" }], options);
+                    //$.plot("#canvas2", [{data : this.points, label:"Sol general"}], options);
+
+                }
+            };
+            var elemento = document.getElementById("visual");
+            new Tangle(elemento, model)
+        });
+    </script>
+</head>
+
+<body>
+    <div id="visual">
+        Tiempo = <span data-var="tiempo" class="TKAdjustableNumber" data-min="0" data-max="100" data-step="1"></span>
+        Omega = <span data-var="omega" class="TKAdjustableNumber" data-min="0" data-max="20" data-step="0.1"></span>
+        beta = <span data-var="beta" class="TKAdjustableNumber" data-min="0" data-max="20" data-step="0.01"></span>
+
+    </div>
+    <canvas id="canvas3d">
+
+    </canvas>
+    <div id="canvas1"></div>
+
+</body>
+
+</html>
